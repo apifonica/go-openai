@@ -4,8 +4,6 @@ import (
 	"errors"
 	"net/http"
 	"testing"
-
-	. "github.com/sashabaranov/go-openai"
 )
 
 func TestAPIErrorUnmarshalJSON(t *testing.T) {
