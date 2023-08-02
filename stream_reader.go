@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	utils "github.com/sashabaranov/go-openai/internal"
 )
@@ -27,6 +28,19 @@ type streamReader[T streamable] struct {
 	response       *http.Response
 	errAccumulator utils.ErrorAccumulator
 	unmarshaler    utils.Unmarshaler
+}
+
+func (stream *streamReader[T]) RateLimitHeaders() http.Header {
+	if stream.response != nil {
+		headers := http.Header{}
+		for k := range stream.response.Header {
+			if strings.Index(k, "X-Ratelimit") > -1 {
+				headers[k] = stream.response.Header[k]
+			}
+		}
+		return headers
+	}
+	return nil
 }
 
 func (stream *streamReader[T]) Recv() (response T, err error) {
